@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Imposter Game</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 55%, #000 100%);
+      color: #e5e7eb;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 480px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .row label {
+      font-size: 14px;
+      flex: 0 0 auto;
+    }
+
+    input[type="number"],
+    input[type="text"] {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #f9fafb;
+      font-size: 14px;
+      outline: none;
+    }
+
+    input[type="text"]::placeholder {
+      color: #6b7280;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      color: #f9fafb;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 48px;
+      margin-top: 6px;
+      font-family: inherit;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 999px;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #22c55e;
+      color: #020617;
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.4);
+      transition: transform 0.05s ease-out, box-shadow 0.05s ease-out, filter 0.1s;
+      touch-action: manipulation;
+    }
+
+    button:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.35);
+      filter: brightness(0.95);
+    }
+
+    button.secondary {
+      background: transparent;
+      color: #e5e7eb;
+      border: 1px solid #4b5563;
+      box-shadow: none;
+    }
+
+    .small {
+      font-size: 12px;
+      opacity: 0.75;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .names-list {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 8px;
+      padding-right: 4px;
+    }
+
+    .name-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .name-row span {
+      font-size: 13px;
+      width: 22px;
+      text-align: right;
+      opacity: 0.7;
+    }
+
+    .big-label {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .word-display {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(15, 118, 110, 0.15);
+      text-align: center;
+    }
+
+    .word-display .theme {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .word-display .word {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .word-display .question-title {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-bottom: 4px;
+    }
+
+    .word-display .question {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .imposter-display {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(220, 38, 38, 0.18);
+      text-align: center;
+    }
+
+    .imposter-display .title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .imposter-display .theme {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 6px;
+    }
+
+    .imposter-display .text {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .player-highlight {
+      font-weight: 700;
+      color: #a5b4fc;
+    }
+
+    .mode-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 8px 0 12px 0;
+    }
+
+    .mode-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid transparent;
+    }
+
+    .mode-option input[type="radio"] {
+      margin-top: 2px;
+      accent-color: #22c55e;
+    }
+
+    .mode-option label {
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mode-option .mode-desc {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .mode-option.active {
+      border-color: #22c55e;
+      background: rgba(22, 163, 74, 0.12);
+    }
+
+    .answers-list {
+      margin-top: 4px;
+      padding: 8px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .answers-list h3 {
+      margin: 0 0 4px 0;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .answers-list ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 4px 0 0 0;
+      font-size: 12px;
+    }
+
+    .answers-list li {
+      margin-bottom: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="card center">
+      <h1>Imposter Game</h1>
+      <p class="small">
+        Eén iemand is de <strong>Imposter</strong>.<br />
+        Kies een modus: een geheime persoon of een vraag met een twist. Geef de telefoon door per speler.
+      </p>
+    </header>
+
+    <!-- Setup scherm -->
+    <section id="setup-screen" class="card">
+      <h2>1. Kies modus</h2>
+
+      <div class="mode-group" id="modeGroup">
+        <div class="mode-option active">
+          <input type="radio" name="mode" id="modeCategories" value="categories" checked />
+          <div>
+            <label for="modeCategories">Categorie & persoon</label>
+            <div class="mode-desc">
+              Iedereen krijgt een bekend woord/persoon (bv. Messi, België, Parijs), één iemand is Imposter en kent het woord niet.
+            </div>
+          </div>
+        </div>
+        <div class="mode-option">
+          <input type="radio" name="mode" id="modePrompt" value="prompt" />
+          <div>
+            <label for="modePrompt">Vraag & antwoord</label>
+            <div class="mode-desc">
+              Iedereen krijgt dezelfde vraag, maar de Imposter krijgt een <strong>andere</strong> vraag (soms tegenovergesteld, soms totaal anders).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2>2. Spelers</h2>
+      <div class="row">
+        <label for="playerCount">Aantal spelers</label>
+        <input id="playerCount" type="number" min="3" max="12" value="5" />
+      </div>
+      <p class="small">
+        Minimaal 3 spelers aanbevolen.
+      </p>
+
+      <div class="names-list" id="namesContainer">
+        <!-- dynamische naamvelden -->
+      </div>
+
+      <button id="startGameBtn">Start ronde</button>
+    </section>
+
+    <!-- Reveal scherm -->
+    <section id="reveal-screen" class="card hidden">
+      <div id="reveal-step-instruction" class="big-label"></div>
+      <p class="small center" id="reveal-helper">
+        Zorg dat alleen <span class="player-highlight">deze speler</span> het scherm ziet.<br />
+        Tik op de knop om je rol te tonen.
+      </p>
+
+      <div id="roleContainer" class="hidden">
+        <!-- hier komt woord of vraag / imposter tekst -->
+      </div>
+
+      <div style="margin-top: 16px;">
+        <button id="primaryRevealBtn">Toon rol</button>
+        <button id="restartFromRevealBtn" class="secondary" style="margin-top:8px;">Nieuwe setup</button>
+      </div>
+    </section>
+
+    <!-- Einde ronde scherm -->
+    <section id="end-screen" class="card hidden">
+      <h2>Rollen gedeeld ✅</h2>
+      <p class="center" id="end-main-text">
+        Alle spelers kennen nu hun rol.
+      </p>
+      <p class="small center" id="end-summary"></p>
+
+      <button id="showAnswersBtn" class="secondary hidden" style="margin-top:8px;">Toon antwoorden</button>
+      <div id="answersContainer" class="hidden" style="margin-top:8px;"></div>
+
+      <button id="playAgainSamePlayersBtn" style="margin-top:8px;">Nieuwe ronde met dezelfde spelers</button>
+      <button id="newSetupBtn" class="secondary" style="margin-top:8px;">Andere spelers / aantal</button>
+    </section>
+  </div>
+
+  <script>
+    // CONFIG ZONE
+    const GAME_CONFIG = {
+      categories: [
+        {
+          naam: "Beroemde voetballer",
+          woorden: [
+            "Lionel Messi",
+            "Cristiano Ronaldo",
+            "Kevin De Bruyne",
+            "Eden Hazard",
+            "Romelu Lukaku",
+            "Thibaut Courtois",
+            "Kylian Mbappé",
+            "Neymar"
+          ]
+        },
+        {
+          naam: "Bekende Vlaming (BV)",
+          woorden: [
+            "Stromae",
+            "Koen Wauters",
+            "Niels Destadsbader",
+            "Gert Verhulst",
+            "Marthe De Pillecyn",
+            "James Cooke",
+            "Dimitri Vegas",
+            "K3"
+          ]
+        },
+        {
+          naam: "Internationale zanger of zangeres",
+          woorden: [
+            "Taylor Swift",
+            "Ed Sheeran",
+            "Beyoncé",
+            "Adele",
+            "The Weeknd",
+            "Dua Lipa",
+            "Billie Eilish",
+            "Harry Styles"
+          ]
+        },
+        {
+          naam: "Internationale acteur of actrice",
+          woorden: [
+            "Leonardo DiCaprio",
+            "Tom Cruise",
+            "Scarlett Johansson",
+            "Ryan Reynolds",
+            "Jennifer Lawrence",
+            "Dwayne Johnson",
+            "Zendaya",
+            "Keanu Reeves"
+          ]
+        },
+        {
+          naam: "Bekende politicus",
+          woorden: [
+            "Alexander De Croo",
+            "Bart De Wever",
+            "Emmanuel Macron",
+            "Angela Merkel",
+            "Donald Trump",
+            "Barack Obama",
+            "Ursula von der Leyen",
+            "Greta Thunberg"
+          ]
+        },
+        {
+          naam: "Bekende YouTuber / creator",
+          woorden: [
+            "MrBeast",
+            "PewDiePie",
+            "Enzo Knol",
+            "Kastiop",
+            "Squeezie",
+            "NikkieTutorials",
+            "Acid",
+            "Ryûta"
+          ]
+        },
+        {
+          naam: "Land",
+          woorden: [
+            "België",
+            "Nederland",
+            "Frankrijk",
+            "Duitsland",
+            "Spanje",
+            "Portugal",
+            "Italië",
+            "Zweden",
+            "Noorwegen",
+            "Finland",
+            "Japan",
+            "China",
+            "Brazilië",
+            "Argentinië",
+            "Australië",
+            "Canada",
+            "Mexico",
+            "Marokko",
+            "Egypte",
+            "India"
+          ]
+        },
+        {
+          naam: "Grote stad",
+          woorden: [
+            "Brussel",
+            "Antwerpen",
+            "Gent",
+            "Amsterdam",
+            "Rotterdam",
+            "Parijs",
+            "Londen",
+            "Berlijn",
+            "Madrid",
+            "Barcelona",
+            "New York",
+            "Los Angeles",
+            "Tokio",
+            "Osaka",
+            "Dubai",
+            "Singapore",
+            "Sydney",
+            "Rio de Janeiro",
+            "Kaapstad",
+            "Istanbul"
+          ]
+        },
+        {
+          naam: "Bekende sporter (niet-voetbal)",
+          woorden: [
+            "Lewis Hamilton",
+            "Max Verstappen",
+            "Novak Djokovic",
+            "Roger Federer",
+            "Serena Williams",
+            "Simone Biles",
+            "Tiger Woods",
+            "Michael Phelps",
+            "Usain Bolt",
+            "Conor McGregor"
+          ]
+        },
+        {
+          naam: "Bekend merk of bedrijf",
+          woorden: [
+            "Apple",
+            "Google",
+            "Tesla",
+            "Mercedes-Benz",
+            "BMW",
+            "Coca-Cola",
+            "McDonald's",
+            "Nike",
+            "Adidas",
+            "Samsung",
+            "Sony",
+            "Red Bull"
+          ]
+        },
+        {
+          naam: "Fictief personage",
+          woorden: [
+            "Harry Potter",
+            "Lord Voldemort",
+            "Batman",
+            "Joker",
+            "Spider-Man",
+            "Darth Vader",
+            "Yoda",
+            "Elsa",
+            "Shrek",
+            "Goku"
+          ]
+        },
+        {
+          naam: "Snack of eten",
+          woorden: [
+            "Pizza",
+            "Sushi",
+            "Hamburger",
+            "Frieten",
+            "Lasagne",
+            "Tacos",
+            "Döner",
+            "Loempia",
+            "Pita",
+            "Ravioli",
+            "Croque monsieur"
+          ]
+        }
+      ],
+
+      prompts: [
+        {
+          publiek: "Wat vind jij het ergste insect?",
+          imposter: "Welk insect zou je zijn als je er één moet zijn?"
+        },
+        {
+          publiek: "Vanaf welke leeftijd kon jij met de fiets rijden?",
+          imposter: "Kies een getal tussen 1 en 20 en doe alsof dat je leeftijd was."
+        },
+        {
+          publiek: "Wat is volgens jou de beste fastfoodketen?",
+          imposter: "Bij welke fastfoodketen eet je bijna nooit?"
+        },
+        {
+          publiek: "Wat is de beste vakantie die je ooit gehad hebt?",
+          imposter: "Wat was je minst leuke vakantie ooit?"
+        },
+        {
+          publiek: "Welke film kun je keer op keer opnieuw kijken?",
+          imposter: "Welke film zou je nooit meer willen zien?"
+        },
+        {
+          publiek: "Wat is je favoriete gerecht met frietjes?",
+          imposter: "Noem een gerecht met frietjes dat je bijna nooit zou bestellen."
+        },
+        {
+          publiek: "In welke stad zou je het liefst wonen?",
+          imposter: "Noem een stad waar je absoluut níet zou willen wonen."
+        },
+        {
+          publiek: "Wat is een hobby die je leuk vindt of graag zou doen?",
+          imposter: "Noem een hobby die totaal niet bij jou past."
+        },
+        {
+          publiek: "Wat is je favoriete seizoen van het jaar?",
+          imposter: "Welk seizoen past het minst bij jou?"
+        },
+        {
+          publiek: "Wat is je favoriete dier?",
+          imposter: "Noem een dier waar je eigenlijk niet zo veel mee hebt."
+        },
+        {
+          publiek: "Wat is je favoriete frisdrank?",
+          imposter: "Noem een drank die je bijna nooit drinkt."
+        },
+        {
+          publiek: "Wat is het leukste dat je ooit kocht voor minder dan 20 euro?",
+          imposter: "Noem iets dat je al lang wilt maar nog nooit gekocht hebt."
+        },
+        {
+          publiek: "Wat is je favoriete broodbeleg?",
+          imposter: "Noem broodbeleg dat je vroeger vaak at maar nu bijna nooit."
+        },
+        {
+          publiek: "Wat is je favoriete dier in de zoo?",
+          imposter: "Noem een dier dat je eng vindt."
+        },
+        {
+          publiek: "Wat is je favoriete tv-programma?",
+          imposter: "Noem een tv-programma dat je bijna nooit kijkt."
+        },
+        {
+          publiek: "Welke stad vind jij het mooist in Europa?",
+          imposter: "Noem een stad waar je nog nooit over hebt nagedacht."
+        },
+        {
+          publiek: "Wat zou jij doen op een vrije zondag?",
+          imposter: "Noem iets dat je nooit zou doen op zondag."
+        },
+        {
+          publiek: "Welk land wil je ooit nog bezoeken?",
+          imposter: "Noem een land waar je geen interesse in hebt."
+        },
+        {
+          publiek: "Wat is volgens jou een van de mooiste talen?",
+          imposter: "Noem een taal die je lastig vindt om te horen."
+        },
+        {
+          publiek: "Welke kleur vind jij het mooist?",
+          imposter: "Noem een kleur die je vandaag toevallig ziet."
+        },
+        {
+          publiek: "Wat is je favoriete ijsje?",
+          imposter: "Noem een ijsje dat je bijna nooit eet."
+        },
+        {
+          publiek: "Welke sport kijk je het liefst?",
+          imposter: "Noem een sport die je amper kent."
+        },
+        {
+          publiek: "Wat is je lievelingseten als kind?",
+          imposter: "Noem iets dat kinderen vaak eten, maar jij nu niet meer."
+        },
+        {
+          publiek: "Welke muziek luister je het vaakst?",
+          imposter: "Noem een genre dat je nooit opzet."
+        },
+        {
+          publiek: "Wat is je favoriete vakantieland?",
+          imposter: "Noem een land dat begint met de letter M."
+        },
+        {
+          publiek: "Wat is een talent dat je hebt?",
+          imposter: "Noem een talent dat niemand bij jou verwacht."
+        },
+        {
+          publiek: "Wat is het leukste cadeau dat je ooit kreeg?",
+          imposter: "Noem iets wat je graag zou krijgen maar nooit durft vragen."
+        },
+        {
+          publiek: "Welke acteur of actrice vind jij echt goed?",
+          imposter: "Noem iemand waarvan je de naam bijna niet kent."
+        },
+        {
+          publiek: "Wat is je favoriete kledingstuk?",
+          imposter: "Noem een kledingstuk dat je vandaag niet draagt."
+        }
+      ]
+    };
+
+    const MODES = {
+      CATEGORIES: "categories",
+      PROMPT: "prompt"
+    };
+
+    // DOM
+    const setupScreen = document.getElementById("setup-screen");
+    const revealScreen = document.getElementById("reveal-screen");
+    const endScreen = document.getElementById("end-screen");
+
+    const playerCountInput = document.getElementById("playerCount");
+    const namesContainer = document.getElementById("namesContainer");
+    const startGameBtn = document.getElementById("startGameBtn");
+
+    const revealInstruction = document.getElementById("reveal-step-instruction");
+    const roleContainer = document.getElementById("roleContainer");
+    const primaryRevealBtn = document.getElementById("primaryRevealBtn");
+    const restartFromRevealBtn = document.getElementById("restartFromRevealBtn");
+
+    const playAgainSamePlayersBtn = document.getElementById("playAgainSamePlayersBtn");
+    const newSetupBtn = document.getElementById("newSetupBtn");
+    const endSummary = document.getElementById("end-summary");
+    const endMainText = document.getElementById("end-main-text");
+
+    const modeGroup = document.getElementById("modeGroup");
+    const modeRadioInputs = document.querySelectorAll("input[name='mode']");
+
+    const showAnswersBtn = document.getElementById("showAnswersBtn");
+    const answersContainer = document.getElementById("answersContainer");
+
+    // State
+    let players = [];
+    let imposterIndex = null;
+    let currentIndex = 0;
+    let category = null;
+    let secretWord = "";
+    let promptPair = null;
+    let rolesRevealed = false;
+    let gameMode = MODES.CATEGORIES;
+    let answers = [];
+
+    // Helpers
+    function showScreen(screen) {
+      setupScreen.classList.add("hidden");
+      revealScreen.classList.add("hidden");
+      endScreen.classList.add("hidden");
+      screen.classList.remove("hidden");
+    }
+
+    function initNameInputs(count) {
+      namesContainer.innerHTML = "";
+      for (let i = 0; i < count; i++) {
+        const row = document.createElement("div");
+        row.className = "name-row";
+        const label = document.createElement("span");
+        label.textContent = (i + 1) + ".";
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Naam speler " + (i + 1);
+        input.dataset.index = i;
+        row.appendChild(label);
+        row.appendChild(input);
+        namesContainer.appendChild(row);
+      }
+    }
+
+    function getPlayerNamesFromInputs() {
+      const inputs = namesContainer.querySelectorAll("input[type='text']");
+      const names = [];
+      inputs.forEach((input, index) => {
+        const raw = input.value.trim();
+        if (raw.length === 0) {
+          names.push("Speler " + (index + 1));
+        } else {
+          names.push(raw);
+        }
+      });
+      return names;
+    }
+
+    function randomItem(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function getSelectedMode() {
+      let value = MODES.CATEGORIES;
+      modeRadioInputs.forEach(r => {
+        if (r.checked) value = r.value;
+      });
+      return value;
+    }
+
+    function setupGameState(useExistingPlayers = false) {
+      if (!useExistingPlayers) {
+        const count = parseInt(playerCountInput.value, 10);
+        if (isNaN(count) || count < 3) {
+          alert("Gebruik minimaal 3 spelers.");
+          return false;
+        }
+        players = getPlayerNamesFromInputs().slice(0, count);
+      }
+
+      gameMode = useExistingPlayers ? gameMode : getSelectedMode();
+
+      imposterIndex = Math.floor(Math.random() * players.length);
+      answers = new Array(players.length).fill("");
+
+      if (gameMode === MODES.CATEGORIES) {
+        category = randomItem(GAME_CONFIG.categories);
+        secretWord = randomItem(category.woorden);
+        promptPair = null;
+      } else {
+        promptPair = randomItem(GAME_CONFIG.prompts);
+        category = null;
+        secretWord = "";
+      }
+
+      currentIndex = 0;
+      rolesRevealed = false;
+
+      answersContainer.classList.add("hidden");
+      answersContainer.innerHTML = "";
+      showAnswersBtn.classList.add("hidden");
+
+      return true;
+    }
+
+    function renderRevealInstruction() {
+      const name = players[currentIndex];
+      revealInstruction.innerHTML = `Geef de telefoon aan <span class="player-highlight">${name}</span>.`;
+    }
+
+    function renderRole() {
+      roleContainer.innerHTML = "";
+      const isImposter = currentIndex === imposterIndex;
+
+      if (gameMode === MODES.CATEGORIES) {
+        if (isImposter) {
+          const box = document.createElement("div");
+          box.className = "imposter-display";
+
+          const title = document.createElement("div");
+          title.className = "title";
+          title.textContent = "JIJ BENT DE IMPOSTER 😈";
+          box.appendChild(title);
+
+          const theme = document.createElement("div");
+          theme.className = "theme";
+          theme.textContent = "Thema: " + category.naam;
+          box.appendChild(theme);
+
+          const text = document.createElement("div");
+          text.className = "text";
+          text.innerHTML =
+            "De andere spelers krijgen een geheim woord (persoon, land, stad, merk, ...).<br>" +
+            "Jij ziet het woord niet. Luister goed, stel vragen, en probeer niet op te vallen.";
+          box.appendChild(text);
+
+          roleContainer.appendChild(box);
+        } else {
+          const box = document.createElement("div");
+          box.className = "word-display";
+
+          const theme = document.createElement("div");
+          theme.className = "theme";
+          theme.textContent = "Thema: " + category.naam;
+          box.appendChild(theme);
+
+          const word = document.createElement("div");
+          word.className = "word";
+          word.textContent = secretWord;
+          box.appendChild(word);
+
+          const hint = document.createElement("div");
+          hint.className = "small";
+          hint.style.marginTop = "6px";
+          hint.textContent = "Onthoud dit woord. De Imposter kent het woord niet.";
+          box.appendChild(hint);
+
+          roleContainer.appendChild(box);
+        }
+      } else {
+        if (isImposter) {
+          const box = document.createElement("div");
+          box.className = "imposter-display";
+
+          const title = document.createElement("div");
+          title.className = "title";
+          title.textContent = "JIJ BENT DE IMPOSTER 😈";
+          box.appendChild(title);
+
+          const theme = document.createElement("div");
+          theme.className = "theme";
+          theme.textContent = "Vraag (alleen voor jou)";
+          box.appendChild(theme);
+
+          const text = document.createElement("div");
+          text.className = "text";
+          text.innerHTML =
+            `<strong>${promptPair.imposter}</strong><br><br>` +
+            "De andere spelers krijgen een andere vraag. Antwoord zo dat je niet opvalt.";
+          box.appendChild(text);
+
+          const answerLabel = document.createElement("div");
+          answerLabel.className = "small";
+          answerLabel.style.marginTop = "8px";
+          answerLabel.textContent = "Typ hier (eventueel) jouw antwoord:";
+          box.appendChild(answerLabel);
+
+          const textarea = document.createElement("textarea");
+          textarea.id = "answerInput";
+          textarea.placeholder = "Bijv. mijn antwoord op deze vraag...";
+          textarea.value = answers[currentIndex] || "";
+          box.appendChild(textarea);
+
+          roleContainer.appendChild(box);
+        } else {
+          const box = document.createElement("div");
+          box.className = "word-display";
+
+          const title = document.createElement("div");
+          title.className = "question-title";
+          title.textContent = "Jouw vraag:";
+          box.appendChild(title);
+
+          const question = document.createElement("div");
+          question.className = "question";
+          question.textContent = promptPair.publiek;
+          box.appendChild(question);
+
+          const hint = document.createElement("div");
+          hint.className = "small";
+          hint.style.marginTop = "6px";
+          hint.textContent = "Onthoud je antwoord. Er zit één Imposter met een andere vraag.";
+          box.appendChild(hint);
+
+          const answerLabel = document.createElement("div");
+          answerLabel.className = "small";
+          answerLabel.style.marginTop = "8px";
+          answerLabel.textContent = "Typ hier (eventueel) jouw antwoord:";
+          box.appendChild(answerLabel);
+
+          const textarea = document.createElement("textarea");
+          textarea.id = "answerInput";
+          textarea.placeholder = "Bijv. mijn antwoord op deze vraag...";
+          textarea.value = answers[currentIndex] || "";
+          box.appendChild(textarea);
+
+          roleContainer.appendChild(box);
+        }
+      }
+    }
+
+    function goToRevealScreen() {
+      showScreen(revealScreen);
+      roleContainer.classList.add("hidden");
+      primaryRevealBtn.textContent = "Toon rol";
+      renderRevealInstruction();
+    }
+
+    function handlePrimaryRevealClick() {
+      const roleHidden = roleContainer.classList.contains("hidden");
+
+      if (roleHidden) {
+        renderRole();
+        roleContainer.classList.remove("hidden");
+        primaryRevealBtn.textContent =
+          currentIndex === players.length - 1
+            ? "Verberg en start het spel"
+            : "Verberg en geef door";
+      } else {
+        if (gameMode === MODES.PROMPT) {
+          const input = document.getElementById("answerInput");
+          if (input) {
+            answers[currentIndex] = input.value.trim();
+          }
+        }
+
+        roleContainer.classList.add("hidden");
+        currentIndex++;
+
+        if (currentIndex >= players.length) {
+          rolesRevealed = true;
+          showEndScreen();
+        } else {
+          renderRevealInstruction();
+          primaryRevealBtn.textContent = "Toon rol";
+        }
+      }
+    }
+
+    function buildAnswersView() {
+      answersContainer.innerHTML = "";
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "answers-list";
+
+      const title = document.createElement("h3");
+      title.textContent = `Antwoorden per speler`;
+      wrapper.appendChild(title);
+
+      if (gameMode === MODES.PROMPT && promptPair) {
+        const info = document.createElement("div");
+        info.className = "small";
+        info.style.marginBottom = "6px";
+        info.textContent =
+          `Vraag voor de meeste spelers: "${promptPair.publiek}". Eén Imposter had een andere vraag.`;
+        wrapper.appendChild(info);
+      }
+
+      const list = document.createElement("ul");
+
+      players.forEach((name, index) => {
+        const li = document.createElement("li");
+        const label = `${name}: `;
+        const answerText = answers[index] && answers[index].length > 0
+          ? answers[index]
+          : "(geen antwoord ingegeven)";
+        li.textContent = label + answerText;
+        list.appendChild(li);
+      });
+
+      wrapper.appendChild(list);
+      answersContainer.appendChild(wrapper);
+    }
+
+    function showEndScreen() {
+      showScreen(endScreen);
+      answersContainer.classList.add("hidden");
+      answersContainer.innerHTML = "";
+
+      if (gameMode === MODES.CATEGORIES) {
+        endMainText.innerHTML =
+          "Alle spelers kennen nu hun rol.<br />Bespreek hints over het woord en probeer de Imposter te vinden.";
+        endSummary.textContent =
+          `Thema was: "${category.naam}". Eén speler is Imposter en kent het geheime woord niet.`;
+        showAnswersBtn.classList.add("hidden");
+      } else {
+        endMainText.innerHTML =
+          "Alle spelers kennen nu hun rol.<br />Beantwoord de vraag hardop en probeer te raden wie een andere vraag heeft.";
+        endSummary.textContent =
+          `Vraag-modus: de meeste spelers kregen: "${promptPair.publiek}". Eén Imposter kreeg een andere vraag.`;
+        showAnswersBtn.classList.remove("hidden");
+        showAnswersBtn.textContent = "Toon antwoorden";
+      }
+    }
+
+    function showSetupScreen() {
+      showScreen(setupScreen);
+    }
+
+    // Events
+    modeGroup.addEventListener("click", (e) => {
+      const option = e.target.closest(".mode-option");
+      if (!option) return;
+      const radio = option.querySelector("input[type='radio']");
+      if (radio) {
+        radio.checked = true;
+        document.querySelectorAll(".mode-option").forEach(o => o.classList.remove("active"));
+        option.classList.add("active");
+      }
+    });
+
+    playerCountInput.addEventListener("change", () => {
+      let count = parseInt(playerCountInput.value, 10);
+      if (isNaN(count) || count < 1) count = 1;
+      if (count > 12) count = 12;
+      playerCountInput.value = count;
+      initNameInputs(count);
+    });
+
+    startGameBtn.addEventListener("click", () => {
+      if (!setupGameState(false)) return;
+      goToRevealScreen();
+    });
+
+    primaryRevealBtn.addEventListener("click", handlePrimaryRevealClick);
+
+    restartFromRevealBtn.addEventListener("click", () => {
+      showSetupScreen();
+    });
+
+    playAgainSamePlayersBtn.addEventListener("click", () => {
+      if (!setupGameState(true)) return;
+      goToRevealScreen();
+    });
+
+    newSetupBtn.addEventListener("click", () => {
+      showSetupScreen();
+    });
+
+    showAnswersBtn.addEventListener("click", () => {
+      if (answersContainer.classList.contains("hidden")) {
+        buildAnswersView();
+        answersContainer.classList.remove("hidden");
+        showAnswersBtn.textContent = "Verberg antwoorden";
+      } else {
+        answersContainer.classList.add("hidden");
+        showAnswersBtn.textContent = "Toon antwoorden";
+      }
+    });
+
+    // Init
+    initNameInputs(parseInt(playerCountInput.value, 10));
+  </script>
+</body>
+</html>
