@@ -105,6 +105,15 @@ const MULTIPLAYER = {
         }
       });
       
+      // Listen for new game restart
+      this.roomRef.child('gameStarted').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val === false && window.returnToMainMenu) {
+          // Game was reset, return to waiting room
+          window.returnToMainMenu();
+        }
+      });
+      
       console.log('Room created:', this.roomCode);
       return this.roomCode;
     } catch (error) {
@@ -158,10 +167,32 @@ const MULTIPLAYER = {
         }
       });
       
-      // Listen for game start
-      this.roomRef.child('gameStarted').on('value', (snapshot) => {
-        if (snapshot.val() && window.handleMultiplayerGameStart) {
+      // Listen for game mode being set (indicates game start)
+      this.roomRef.child('gameMode').on('value', (snapshot) => {
+        const gameMode = snapshot.val();
+        if (gameMode && window.handleMultiplayerGameStart) {
+          // Only trigger once when game mode is first set
+          this.roomRef.child('gameMode').off('value');
           window.handleMultiplayerGameStart();
+        }
+      });
+      
+      // Listen for full game data
+      this.roomRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.gameMode && data.gameStarted && window.handleGameDataReceived) {
+          // Remove this listener after first call to avoid duplicates
+          this.roomRef.off('value');
+          window.handleGameDataReceived(data);
+        }
+      });
+      
+      // Listen for game restart
+      this.roomRef.child('gameStarted').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val === false && window.returnToMainMenu) {
+          // Game was reset, return to waiting room
+          window.returnToMainMenu();
         }
       });
       
@@ -175,16 +206,55 @@ const MULTIPLAYER = {
   },
   
   // Start game (host only)
-  async startGame() {
+  async startGame(gameMode, playersList, imposterIndex, gameData) {
     if (!this.isHost || !this.roomRef) return;
     
     try {
       await this.roomRef.update({
         gameStarted: true,
-        status: 'playing'
+        status: 'playing',
+        gameMode: gameMode,
+        players: playersList.map((name, index) => ({
+          name: name,
+          isImposter: index === imposterIndex
+        })),
+        gameData: gameData // category/word or prompt pair
       });
     } catch (error) {
       console.error('Error starting game:', error);
+    }
+  },
+  
+  // Update player's answer (for Q&A mode)
+  async updatePlayerAnswer(answer) {
+    if (!this.roomRef || !this.playerId) return;
+    
+    try {
+      await this.roomRef.child('playerAnswers').child(this.playerId).set({
+        name: this.playerName,
+        answer: answer,
+        timestamp: Date.now()
+      });
+    } catch (error) {
+      console.error('Error updating answer:', error);
+    }
+  },
+  
+  // Start new game (host only)
+  async startNewGame() {
+    if (!this.isHost || !this.roomRef) return;
+    
+    try {
+      await this.roomRef.update({
+        gameStarted: false,
+        status: 'waiting',
+        gameMode: null,
+        players: null,
+        gameData: null,
+        playerAnswers: null
+      });
+    } catch (error) {
+      console.error('Error starting new game:', error);
     }
   },
   
