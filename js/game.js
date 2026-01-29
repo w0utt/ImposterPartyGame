@@ -139,6 +139,7 @@ function setupGameState(useExistingPlayers = false) {
   gameMode = useExistingPlayers ? gameMode : getSelectedMode();
 
   imposterIndex = Math.floor(Math.random() * players.length);
+  console.log(`[setupGameState] New game - ${players.length} players, imposter is at index ${imposterIndex} (${players[imposterIndex]})`);
   answers = new Array(players.length).fill("");
 
   if (gameMode === MODES.CATEGORIES) {
@@ -170,6 +171,7 @@ function renderRevealInstruction() {
 function renderRole() {
   roleContainer.innerHTML = "";
   const isImposter = currentIndex === imposterIndex;
+  console.log(`[renderRole] currentIndex=${currentIndex}, imposterIndex=${imposterIndex}, isImposter=${isImposter}, player=${players[currentIndex]}, gameMode=${gameMode}`);
 
   if (gameMode === MODES.CATEGORIES) {
     if (isImposter) {
@@ -351,6 +353,8 @@ function handlePrimaryRevealClick() {
 
 // Show answer large on screen (for multiplayer Q&A)
 function showAnswerLarge(answer) {
+  console.log(`[showAnswerLarge] Called with answer="${answer}", isHost=${MULTIPLAYER.isHost}, promptPair=`, promptPair);
+  
   roleContainer.innerHTML = "";
   
   const box = document.createElement("div");
@@ -371,6 +375,8 @@ function showAnswerLarge(answer) {
   
   // Always show the non-imposter question to the host (whether they are imposter or not)
   if (MULTIPLAYER.isHost && promptPair) {
+    console.log(`[showAnswerLarge] Displaying non-imposter question: "${promptPair.publiek}"`);
+    
     const separator = document.createElement("hr");
     separator.style.margin = "20px 0";
     separator.style.border = "none";
@@ -389,6 +395,8 @@ function showAnswerLarge(answer) {
     questionText.style.fontWeight = "500";
     questionText.textContent = promptPair.publiek;
     box.appendChild(questionText);
+  } else {
+    console.log(`[showAnswerLarge] NOT displaying non-imposter question. isHost=${MULTIPLAYER.isHost}, promptPair=${!!promptPair}`);
   }
   
   roleContainer.appendChild(box);
@@ -736,6 +744,8 @@ function handleGameDataReceived(gameData) {
   }
   
   const amImposter = gameData.players[myIndex].isImposter;
+  
+  console.log(`[handleGameDataReceived] Non-host player ${MULTIPLAYER.playerName} at index ${myIndex}, isImposter=${amImposter}`);
   
   // Set imposterIndex properly for renderRole to work
   imposterIndex = gameData.players.findIndex(p => p.isImposter);
