@@ -379,7 +379,7 @@ function showAnswerLarge(answer) {
     
     const questionLabel = document.createElement("div");
     questionLabel.className = "small";
-    questionLabel.textContent = "Vraag voor niet-imposters:";
+    questionLabel.textContent = "Vraag voor de meeste spelers:";
     questionLabel.style.marginBottom = "12px";
     box.appendChild(questionLabel);
     
