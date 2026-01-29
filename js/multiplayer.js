@@ -175,7 +175,7 @@ const MULTIPLAYER = {
           // Game has started, fetch full data
           this.roomRef.once('value', (dataSnapshot) => {
             const data = dataSnapshot.val();
-            if (data && data.gameMode && window.handleGameDataReceived) {
+            if (data && data.gameMode && data.players && data.gameData && window.handleGameDataReceived) {
               window.handleGameDataReceived(data);
             }
           });
