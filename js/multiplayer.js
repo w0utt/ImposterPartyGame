@@ -198,30 +198,18 @@ const MULTIPLAYER = {
   async startGame(gameMode, playersList, imposterIndex, gameData) {
     if (!this.isHost || !this.roomRef) return;
     
-    console.log(`[MULTIPLAYER.startGame] Starting game with ${playersList.length} players, imposter at index ${imposterIndex}`);
-    
     try {
       // Save original players before overwriting
       this.originalPlayers = [...this.players];
-      
-      const playersData = playersList.map((name, index) => ({
-        name: name,
-        isImposter: index === imposterIndex
-      }));
-      
-      // Verify exactly one imposter
-      const imposterCount = playersData.filter(p => p.isImposter).length;
-      if (imposterCount !== 1) {
-        console.error(`[MULTIPLAYER.startGame] ERROR: Expected 1 imposter, got ${imposterCount}!`);
-      }
-      
-      console.log(`[MULTIPLAYER.startGame] Players data:`, playersData);
       
       await this.roomRef.update({
         gameStarted: true,
         status: 'playing',
         gameMode: gameMode,
-        players: playersData,
+        players: playersList.map((name, index) => ({
+          name: name,
+          isImposter: index === imposterIndex
+        })),
         gameData: gameData // category/word or prompt pair
       });
     } catch (error) {

@@ -139,14 +139,6 @@ function setupGameState(useExistingPlayers = false) {
   gameMode = useExistingPlayers ? gameMode : getSelectedMode();
 
   imposterIndex = Math.floor(Math.random() * players.length);
-  console.log(`[setupGameState] New game - ${players.length} players, Math.random()=${Math.random()}, imposter is at index ${imposterIndex} (${players[imposterIndex]})`);
-  
-  // Sanity check
-  if (imposterIndex < 0 || imposterIndex >= players.length) {
-    console.error(`[setupGameState] ERROR: Invalid imposterIndex ${imposterIndex} for ${players.length} players`);
-    imposterIndex = 0; // Fallback to first player
-  }
-  
   answers = new Array(players.length).fill("");
 
   if (gameMode === MODES.CATEGORIES) {
@@ -178,7 +170,6 @@ function renderRevealInstruction() {
 function renderRole() {
   roleContainer.innerHTML = "";
   const isImposter = currentIndex === imposterIndex;
-  console.log(`[renderRole] currentIndex=${currentIndex}, imposterIndex=${imposterIndex}, isImposter=${isImposter}, player=${players[currentIndex]}, gameMode=${gameMode}`);
 
   if (gameMode === MODES.CATEGORIES) {
     if (isImposter) {
@@ -360,8 +351,6 @@ function handlePrimaryRevealClick() {
 
 // Show answer large on screen (for multiplayer Q&A)
 function showAnswerLarge(answer) {
-  console.log(`[showAnswerLarge] Called with answer="${answer}", isHost=${MULTIPLAYER.isHost}, promptPair=`, promptPair);
-  
   roleContainer.innerHTML = "";
   
   const box = document.createElement("div");
@@ -383,8 +372,6 @@ function showAnswerLarge(answer) {
   // Always show the non-imposter question (whether they are imposter or not)
   // This helps players identify who might have gotten the imposter question
   if (promptPair) {
-    console.log(`[showAnswerLarge] Displaying non-imposter question: "${promptPair.publiek}"`);
-    
     const separator = document.createElement("hr");
     separator.style.margin = "20px 0";
     separator.style.border = "none";
@@ -403,8 +390,6 @@ function showAnswerLarge(answer) {
     questionText.style.fontWeight = "500";
     questionText.textContent = promptPair.publiek;
     box.appendChild(questionText);
-  } else {
-    console.log(`[showAnswerLarge] NOT displaying non-imposter question. promptPair=${!!promptPair}`);
   }
   
   roleContainer.appendChild(box);
@@ -521,16 +506,13 @@ startGameBtn.addEventListener("click", () => {
     MULTIPLAYER.startGame(gameMode, players, imposterIndex, gameData);
     
     // For multiplayer, show individual screen for host too
-    console.log(`[startGameBtn.click] Looking for host "${MULTIPLAYER.playerName}" in players:`, players);
     const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
     
     if (myIndex === -1) {
-      console.error(`[startGameBtn.click] Host not found! playerName="${MULTIPLAYER.playerName}", players=`, players);
+      console.error('Host not found in players list');
       alert('Er is een probleem opgetreden. Je naam werd niet gevonden in de spelers lijst.');
       return;
     }
-    
-    console.log(`[startGameBtn.click] Host found at index ${myIndex}, imposterIndex=${imposterIndex}, am I imposter=${myIndex === imposterIndex}`);
     
     const amImposter = myIndex === imposterIndex;
     showIndividualPlayerScreen(myIndex, amImposter);
@@ -558,16 +540,13 @@ playAgainSamePlayersBtn.addEventListener("click", () => {
     MULTIPLAYER.startGame(gameMode, players, imposterIndex, gameData);
     
     // For multiplayer, show individual screen for host too
-    console.log(`[playAgainSamePlayersBtn.click] Looking for host "${MULTIPLAYER.playerName}" in players:`, players);
     const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
     
     if (myIndex === -1) {
-      console.error(`[playAgainSamePlayersBtn.click] Host not found! playerName="${MULTIPLAYER.playerName}", players=`, players);
+      console.error('Host not found in players list');
       alert('Er is een probleem opgetreden. Je naam werd niet gevonden in de spelers lijst.');
       return;
     }
-    
-    console.log(`[playAgainSamePlayersBtn.click] Host found at index ${myIndex}, imposterIndex=${imposterIndex}, am I imposter=${myIndex === imposterIndex}`);
     
     const amImposter = myIndex === imposterIndex;
     showIndividualPlayerScreen(myIndex, amImposter);
@@ -759,22 +738,8 @@ function handleGameDataReceived(gameData) {
   
   const amImposter = gameData.players[myIndex].isImposter;
   
-  console.log(`[handleGameDataReceived] Non-host player ${MULTIPLAYER.playerName} at index ${myIndex}, isImposter=${amImposter}`);
-  
   // Set imposterIndex properly for renderRole to work
   imposterIndex = gameData.players.findIndex(p => p.isImposter);
-  
-  if (imposterIndex === -1) {
-    console.error(`[handleGameDataReceived] ERROR: No imposter found in game data!`, gameData.players);
-    // Fallback: use the myIndex's isImposter flag to determine locally
-    if (amImposter) {
-      imposterIndex = myIndex;
-    } else {
-      imposterIndex = 0; // Fallback to first player (shouldn't happen)
-    }
-  }
-  
-  console.log(`[handleGameDataReceived] imposterIndex=${imposterIndex}, imposter is ${gameData.players[imposterIndex]?.name}`);
   
   if (gameMode === MODES.CATEGORIES) {
     category = { naam: gameData.gameData.category };
