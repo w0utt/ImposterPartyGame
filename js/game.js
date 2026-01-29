@@ -469,7 +469,7 @@ joinGameBtn.addEventListener("click", () => {
 });
 
 // Host Setup
-createRoomBtn.addEventListener("click", () => {
+createRoomBtn.addEventListener("click", async () => {
   const name = hostNameInput.value.trim();
   if (!name) {
     alert("Vul je naam in");
@@ -493,14 +493,9 @@ createRoomBtn.addEventListener("click", () => {
     return;
   }
   
-  // Wait for peer to be ready with Firebase
-  if (!MULTIPLAYER.peerId) {
-    connectionStatus.textContent = "Verbinding maken...";
-    setTimeout(() => createRoomBtn.click(), 500);
-    return;
-  }
+  const roomCode = await MULTIPLAYER.hostGame(name);
+  if (!roomCode) return;
   
-  const roomCode = MULTIPLAYER.hostGame(name);
   isMultiplayer = true;
   
   // Show waiting room
@@ -515,7 +510,7 @@ backFromHostBtn.addEventListener("click", () => {
 });
 
 // Join Setup
-joinRoomBtn.addEventListener("click", () => {
+joinRoomBtn.addEventListener("click", async () => {
   const name = joinNameInput.value.trim();
   const code = roomCodeInput.value.trim().toUpperCase();
   
@@ -535,14 +530,7 @@ joinRoomBtn.addEventListener("click", () => {
     return;
   }
   
-  // Wait for peer to be ready
-  if (!MULTIPLAYER.peerId) {
-    connectionStatus.textContent = "Verbinding maken...";
-    setTimeout(() => joinRoomBtn.click(), 500);
-    return;
-  }
-  
-  const success = MULTIPLAYER.joinGame(name, code);
+  const success = await MULTIPLAYER.joinGame(name, code);
   if (success) {
     isMultiplayer = true;
     displayedRoomCode.textContent = code;

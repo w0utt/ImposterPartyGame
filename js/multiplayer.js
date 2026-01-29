@@ -2,13 +2,16 @@
 // Multiplayer functionality using Firebase Realtime Database
 // =====================================================
 
-// Firebase configuration (public demo config - users should replace with their own)
+// Firebase configuration
+// IMPORTANT: Replace this with your own Firebase project configuration
+// See MULTIPLAYER_SETUP.md for complete setup instructions
+// The demo config below will NOT work - you must create your own Firebase project
 const firebaseConfig = {
-  apiKey: "AIzaSyDemoKeyForImposterGame123456789",
-  authDomain: "imposter-game-demo.firebaseapp.com",
-  databaseURL: "https://imposter-game-demo-default-rtdb.firebaseio.com",
-  projectId: "imposter-game-demo",
-  storageBucket: "imposter-game-demo.appspot.com",
+  apiKey: "YOUR_API_KEY_HERE",
+  authDomain: "your-project.firebaseapp.com",
+  databaseURL: "https://your-project-default-rtdb.firebaseio.com",
+  projectId: "your-project",
+  storageBucket: "your-project.appspot.com",
   messagingSenderId: "123456789012",
   appId: "1:123456789012:web:abc123def456"
 };
@@ -21,7 +24,6 @@ const MULTIPLAYER = {
   playerId: null,
   players: [],
   roomRef: null,
-  listeners: [],
   
   // Initialize Firebase
   init() {
@@ -54,7 +56,7 @@ const MULTIPLAYER = {
   
   // Generate unique player ID
   generatePlayerId() {
-    return 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    return 'player_' + Date.now() + '_' + Math.random().toString(36).substring(2, 11);
   },
   
   // Host a game
@@ -191,12 +193,11 @@ const MULTIPLAYER = {
         // Remove player from room
         await this.roomRef.child('players').child(this.playerId).remove();
         
-        // If host is leaving and room is empty, delete room
+        // If host is leaving, delete the entire room
+        // Note: This implementation closes the room when host leaves
+        // For production, consider implementing host migration instead
         if (this.isHost) {
-          const snapshot = await this.roomRef.child('players').once('value');
-          if (!snapshot.exists() || Object.keys(snapshot.val()).length === 0) {
-            await this.roomRef.remove();
-          }
+          await this.roomRef.remove();
         }
         
         // Remove listeners
