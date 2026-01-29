@@ -139,7 +139,7 @@ function setupGameState(useExistingPlayers = false) {
   gameMode = useExistingPlayers ? gameMode : getSelectedMode();
 
   imposterIndex = Math.floor(Math.random() * players.length);
-  console.log(`[setupGameState] New game - ${players.length} players, imposter is at index ${imposterIndex} (${players[imposterIndex]})`);
+  console.log(`[setupGameState] New game - ${players.length} players, Math.random()=${Math.random()}, imposter is at index ${imposterIndex} (${players[imposterIndex]})`);
   
   // Sanity check
   if (imposterIndex < 0 || imposterIndex >= players.length) {
@@ -757,6 +757,18 @@ function handleGameDataReceived(gameData) {
   
   // Set imposterIndex properly for renderRole to work
   imposterIndex = gameData.players.findIndex(p => p.isImposter);
+  
+  if (imposterIndex === -1) {
+    console.error(`[handleGameDataReceived] ERROR: No imposter found in game data!`, gameData.players);
+    // Fallback: use the myIndex's isImposter flag to determine locally
+    if (amImposter) {
+      imposterIndex = myIndex;
+    } else {
+      imposterIndex = 0; // Fallback to first player (shouldn't happen)
+    }
+  }
+  
+  console.log(`[handleGameDataReceived] imposterIndex=${imposterIndex}, imposter is ${gameData.players[imposterIndex]?.name}`);
   
   if (gameMode === MODES.CATEGORIES) {
     category = { naam: gameData.gameData.category };

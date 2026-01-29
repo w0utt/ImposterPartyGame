@@ -209,6 +209,12 @@ const MULTIPLAYER = {
         isImposter: index === imposterIndex
       }));
       
+      // Verify exactly one imposter
+      const imposterCount = playersData.filter(p => p.isImposter).length;
+      if (imposterCount !== 1) {
+        console.error(`[MULTIPLAYER.startGame] ERROR: Expected 1 imposter, got ${imposterCount}!`);
+      }
+      
       console.log(`[MULTIPLAYER.startGame] Players data:`, playersData);
       
       await this.roomRef.update({
