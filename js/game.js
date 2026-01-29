@@ -140,6 +140,13 @@ function setupGameState(useExistingPlayers = false) {
 
   imposterIndex = Math.floor(Math.random() * players.length);
   console.log(`[setupGameState] New game - ${players.length} players, imposter is at index ${imposterIndex} (${players[imposterIndex]})`);
+  
+  // Sanity check
+  if (imposterIndex < 0 || imposterIndex >= players.length) {
+    console.error(`[setupGameState] ERROR: Invalid imposterIndex ${imposterIndex} for ${players.length} players`);
+    imposterIndex = 0; // Fallback to first player
+  }
+  
   answers = new Array(players.length).fill("");
 
   if (gameMode === MODES.CATEGORIES) {
@@ -373,8 +380,9 @@ function showAnswerLarge(answer) {
   answerText.textContent = answer;
   box.appendChild(answerText);
   
-  // Always show the non-imposter question to the host (whether they are imposter or not)
-  if (MULTIPLAYER.isHost && promptPair) {
+  // Always show the non-imposter question (whether they are imposter or not)
+  // This helps players identify who might have gotten the imposter question
+  if (promptPair) {
     console.log(`[showAnswerLarge] Displaying non-imposter question: "${promptPair.publiek}"`);
     
     const separator = document.createElement("hr");
@@ -396,7 +404,7 @@ function showAnswerLarge(answer) {
     questionText.textContent = promptPair.publiek;
     box.appendChild(questionText);
   } else {
-    console.log(`[showAnswerLarge] NOT displaying non-imposter question. isHost=${MULTIPLAYER.isHost}, promptPair=${!!promptPair}`);
+    console.log(`[showAnswerLarge] NOT displaying non-imposter question. promptPair=${!!promptPair}`);
   }
   
   roleContainer.appendChild(box);
