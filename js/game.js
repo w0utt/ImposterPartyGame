@@ -507,7 +507,30 @@ restartFromRevealBtn.addEventListener("click", () => {
 
 playAgainSamePlayersBtn.addEventListener("click", () => {
   if (!setupGameState(true)) return;
-  goToRevealScreen();
+  
+  // If multiplayer, sync game state to all players
+  if (isMultiplayer && MULTIPLAYER.isHost) {
+    const gameData = gameMode === MODES.CATEGORIES 
+      ? { category: category.naam, word: secretWord }
+      : { publicPrompt: promptPair.publiek, imposterPrompt: promptPair.imposter };
+    
+    MULTIPLAYER.startGame(gameMode, players, imposterIndex, gameData);
+    
+    // For multiplayer, show individual screen for host too
+    const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
+    
+    if (myIndex === -1) {
+      console.error('Host not found in players list');
+      alert('Er is een probleem opgetreden. Je naam werd niet gevonden in de spelers lijst.');
+      return;
+    }
+    
+    const amImposter = myIndex === imposterIndex;
+    showIndividualPlayerScreen(myIndex, amImposter);
+  } else {
+    // Local game - use the pass-around-device flow
+    goToRevealScreen();
+  }
 });
 
 newSetupBtn.addEventListener("click", () => {
