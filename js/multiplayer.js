@@ -25,6 +25,7 @@ const MULTIPLAYER = {
   playerName: null,
   playerId: null,
   players: [],
+  originalPlayers: [], // Store original player data before game starts
   roomRef: null,
   
   // Initialize Firebase
@@ -200,6 +201,9 @@ const MULTIPLAYER = {
     if (!this.isHost || !this.roomRef) return;
     
     try {
+      // Save original players before overwriting
+      this.originalPlayers = [...this.players];
+      
       await this.roomRef.update({
         gameStarted: true,
         status: 'playing',
@@ -235,13 +239,25 @@ const MULTIPLAYER = {
     if (!this.isHost || !this.roomRef) return;
     
     try {
+      // Restore players object to original format using saved data
+      const playersObject = {};
+      const playersToRestore = this.originalPlayers.length > 0 ? this.originalPlayers : this.players;
+      
+      playersToRestore.forEach(player => {
+        playersObject[player.id] = {
+          name: player.name,
+          isHost: player.isHost || false,
+          joinedAt: Date.now()
+        };
+      });
+      
       await this.roomRef.update({
         gameStarted: false,
         status: 'waiting',
         gameMode: null,
-        players: null,
         gameData: null,
-        playerAnswers: null
+        playerAnswers: null,
+        players: playersObject
       });
     } catch (error) {
       console.error('Error starting new game:', error);
@@ -274,6 +290,7 @@ const MULTIPLAYER = {
     this.playerName = null;
     this.playerId = null;
     this.players = [];
+    this.originalPlayers = [];
     this.roomRef = null;
   },
   
