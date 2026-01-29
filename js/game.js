@@ -521,13 +521,16 @@ startGameBtn.addEventListener("click", () => {
     MULTIPLAYER.startGame(gameMode, players, imposterIndex, gameData);
     
     // For multiplayer, show individual screen for host too
+    console.log(`[startGameBtn.click] Looking for host "${MULTIPLAYER.playerName}" in players:`, players);
     const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
     
     if (myIndex === -1) {
-      console.error('Host not found in players list');
+      console.error(`[startGameBtn.click] Host not found! playerName="${MULTIPLAYER.playerName}", players=`, players);
       alert('Er is een probleem opgetreden. Je naam werd niet gevonden in de spelers lijst.');
       return;
     }
+    
+    console.log(`[startGameBtn.click] Host found at index ${myIndex}, imposterIndex=${imposterIndex}, am I imposter=${myIndex === imposterIndex}`);
     
     const amImposter = myIndex === imposterIndex;
     showIndividualPlayerScreen(myIndex, amImposter);
@@ -555,13 +558,16 @@ playAgainSamePlayersBtn.addEventListener("click", () => {
     MULTIPLAYER.startGame(gameMode, players, imposterIndex, gameData);
     
     // For multiplayer, show individual screen for host too
+    console.log(`[playAgainSamePlayersBtn.click] Looking for host "${MULTIPLAYER.playerName}" in players:`, players);
     const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
     
     if (myIndex === -1) {
-      console.error('Host not found in players list');
+      console.error(`[playAgainSamePlayersBtn.click] Host not found! playerName="${MULTIPLAYER.playerName}", players=`, players);
       alert('Er is een probleem opgetreden. Je naam werd niet gevonden in de spelers lijst.');
       return;
     }
+    
+    console.log(`[playAgainSamePlayersBtn.click] Host found at index ${myIndex}, imposterIndex=${imposterIndex}, am I imposter=${myIndex === imposterIndex}`);
     
     const amImposter = myIndex === imposterIndex;
     showIndividualPlayerScreen(myIndex, amImposter);
