@@ -261,7 +261,7 @@ const GAME_CONFIG = {
 
   prompts: [
     {
-      publiek: "Wat vind jij het ergste insect?",
+      publiek: "Welk insect haat je het meest?",
       imposter: "Welk insect zou je zijn als je er één kon zijn?"
     },
     {
@@ -282,7 +282,7 @@ const GAME_CONFIG = {
     },
     {
       publiek: "Wat is je favoriete snack van de frituur?",
-      imposter: "Wat is jouw minst favoriete snack in de frituur?"
+      imposter: "Wat is de meest overrated snack in de frituur?"
     },
     {
       publiek: "In welke stad zou je het liefst wonen?",
@@ -297,15 +297,15 @@ const GAME_CONFIG = {
       imposter: "Wat is jouw minst favoriete seizoen van het jaar?"
     },
     {
-      publiek: "Wat is je favoriete dier?",
-      imposter: "Noem een dier."
+      publiek: "Wat is je favoriete zoogdier?",
+      imposter: "Welk zoogdier zou jij kunnen verslaan in een gevecht?"
     },
     {
       publiek: "Wat is je favoriete frisdrank?",
       imposter: "Welke frisdrank is het meest overrated?"
     },
     {
-      publiek: "Wat is het leukste dat je ooit kocht voor minder dan 20 euro?",
+      publiek: "Wat is het leukste dat je ooit kocht?",
       imposter: "Noem iets dat je al lang wilt maar nog nooit gekocht hebt."
     },
     {
@@ -338,27 +338,27 @@ const GAME_CONFIG = {
     },
     {
       publiek: "Welke kleur vind jij het mooist?",
-      imposter: "Noem een kleur die je vandaag toevallig ziet."
+      imposter: "Noem een kleur die je nooit zou dragen."
     },
     {
       publiek: "Wat is je favoriete ijsje?",
-      imposter: "Noem een ijsje dat je bijna nooit eet."
+      imposter: "Noem een ijssmaak dat je nooit neemt."
     },
     {
       publiek: "Welke sport zou je professioneel willen uitoefenen als je mocht kiezen?",
-      imposter: "Noem een sport die je amper kent."
+      imposter: "Wat is de domste sport die je kent?"
     },
     {
       publiek: "Wat is je lievelingseten als kind?",
-      imposter: "Noem iets dat kinderen vaak eten, maar jij nu niet meer."
+      imposter: "Noem iets dat je vaak at als kind, maar nu niet meer."
     },
     {
       publiek: "Welke muziek luister je het vaakst?",
-      imposter: "Noem een genre dat je nooit opzet."
+      imposter: "Noem een muziekgenre dat je nooit luistert."
     },
     {
       publiek: "Wat is je favoriete vakantieland?",
-      imposter: "Wat is een land dat je nog graag zou bezichtigen?"
+      imposter: "Welk land zou je nog eens willen bezichtigen van de landen die je al hebt bezichtigd?"
     },
     {
       publiek: "Wat is een talent dat je hebt?",
@@ -366,7 +366,7 @@ const GAME_CONFIG = {
     },
     {
       publiek: "Wat is het leukste cadeau dat je ooit kreeg?",
-      imposter: "Noem iets wat je graag zou krijgen maar nooit durft vragen."
+      imposter: "Noem iets wat je graag zou krijgen maar nooit durft te vragen."
     },
     {
       publiek: "Welke acteur of actrice vind jij echt goed?",
@@ -386,11 +386,143 @@ const GAME_CONFIG = {
     },
     {
       publiek: "Wat is jouw favoriete game?",
-      imposter: "Noem een game."
+      imposter: "Welk spel heb je gekocht, maar amper gespeeld."
     },
     {
-      publiek: "Wat is een talent dat je graag zou willen leren?",
-      imposter: "Noem een talent waarvan je weet dat je het nooit gaat leren."
-    }
+      publiek: "Welke voetballer is overrated?",
+      imposter: "Wie is je favoriete voetbalspeler?"
+    },
+  {
+    "publiek": "Welk insect zou je zijn als je er één kon zijn?",
+    "imposter": "Welk insect haat je het meest?"
+  },
+  {
+    "publiek": "Kies een getal tussen 5 en 15.",
+    "imposter": "Vanaf welke leeftijd kon jij met de fiets rijden?"
+  },
+  {
+    "publiek": "Welk fastfood restaurant is het meest overrated?",
+    "imposter": "Wat is het beste fastfood restaurant?"
+  },
+  {
+    "publiek": "Wat was je minst leuke vakantie ooit?",
+    "imposter": "Wat is de beste vakantie die je ooit gehad hebt?"
+  },
+  {
+    "publiek": "Welke film kun je niet meer opnieuw kijken?",
+    "imposter": "Welke film kun je keer op keer opnieuw kijken?"
+  },
+  {
+    "publiek": "Wat is de meest overrated snack in de frituur?",
+    "imposter": "Wat is je favoriete snack van de frituur?"
+  },
+  {
+    "publiek": "Noem een stad waar je absoluut níet zou willen wonen.",
+    "imposter": "In welke stad zou je het liefst wonen?"
+  },
+  {
+    "publiek": "Noem een hobby die totaal niet bij jou past.",
+    "imposter": "Wat is een hobby die je leuk vindt of graag zou doen?"
+  },
+  {
+    "publiek": "Wat is jouw minst favoriete seizoen van het jaar?",
+    "imposter": "Wat is je favoriete seizoen van het jaar?"
+  },
+  {
+    "publiek": "Welk zoogdier zou jij kunnen verslaan in een gevecht?",
+    "imposter": "Wat is je favoriete zoogdier?"
+  },
+  {
+    "publiek": "Welke frisdrank is het meest overrated?",
+    "imposter": "Wat is je favoriete frisdrank?"
+  },
+  {
+    "publiek": "Noem iets dat je al lang wilt maar nog nooit gekocht hebt.",
+    "imposter": "Wat is het leukste dat je ooit kocht?"
+  },
+  {
+    "publiek": "Noem broodbeleg dat je vroeger vaak at maar nu bijna nooit.",
+    "imposter": "Wat is je favoriete broodbeleg?"
+  },
+  {
+    "publiek": "Welk dier in de zoo is het engste?",
+    "imposter": "Wat is je favoriete dier in de zoo?"
+  },
+  {
+    "publiek": "Noem een tv-programma dat je bijna nooit kijkt.",
+    "imposter": "Wat is je favoriete tv-programma?"
+  },
+  {
+    "publiek": "Welke stad in Europa zou je niet willen bezoeken?",
+    "imposter": "Welke stad vind jij het mooist in Europa?"
+  },
+  {
+    "publiek": "Noem iets dat je nooit zou doen op zondag.",
+    "imposter": "Wat zou jij doen op een vrije zondag?"
+  },
+  {
+    "publiek": "Noem een land waar je geen interesse in hebt.",
+    "imposter": "Welk land wil je ooit nog bezoeken?"
+  },
+  {
+    "publiek": "Noem een taal die je niet begrijpt.",
+    "imposter": "Wat is volgens jou een van de mooiste talen?"
+  },
+  {
+    "publiek": "Noem een kleur die je nooit zou dragen.",
+    "imposter": "Welke kleur vind jij het mooist?"
+  },
+  {
+    "publiek": "Noem een ijssmaak dat je nooit neemt.",
+    "imposter": "Wat is je favoriete ijsje?"
+  },
+  {
+    "publiek": "Wat is de domste sport die je kent?",
+    "imposter": "Welke sport zou je professioneel willen uitoefenen als je mocht kiezen?"
+  },
+  {
+    "publiek": "Noem iets dat je vaak at als kind, maar nu niet meer.",
+    "imposter": "Wat is je lievelingseten als kind?"
+  },
+  {
+    "publiek": "Noem een muziekgenre dat je nooit luistert.",
+    "imposter": "Welke muziek luister je het vaakst?"
+  },
+  {
+    "publiek": "Welk land zou je nog eens willen bezichtigen van de landen die je al hebt bezichtigd?",
+    "imposter": "Wat is je favoriete vakantieland?"
+  },
+  {
+    "publiek": "Noem een talent dat niemand bij jou verwacht.",
+    "imposter": "Wat is een talent dat je hebt?"
+  },
+  {
+    "publiek": "Noem iets wat je graag zou krijgen maar nooit durft te vragen.",
+    "imposter": "Wat is het leukste cadeau dat je ooit kreeg?"
+  },
+  {
+    "publiek": "Welke acteur of actrice is overrated?",
+    "imposter": "Welke acteur of actrice vind jij echt goed?"
+  },
+  {
+    "publiek": "Noem een kledingstuk dat je vandaag niet draagt.",
+    "imposter": "Wat is je favoriete kledingstuk?"
+  },
+  {
+    "publiek": "Geef me een range tussen de 10 en de 25.",
+    "imposter": "Wat zou voor jou de age of consent moeten zijn?"
+  },
+  {
+    "publiek": "Welke app staat op je telefoon maar gebruik je nooit?",
+    "imposter": "Welke app gebruik jij het meest op je telefoon, maar zou je minder moeten gebruiken?"
+  },
+  {
+    "publiek": "Welk spel heb je gekocht, maar amper gespeeld.",
+    "imposter": "Wat is jouw favoriete game?"
+  },
+  {
+    "publiek": "Wie is je favoriete voetbalspeler?",
+    "imposter": "Welke voetballer is overrated?"
+  }
   ]
 };
