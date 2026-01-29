@@ -6,14 +6,16 @@
 // IMPORTANT: Replace this with your own Firebase project configuration
 // See MULTIPLAYER_SETUP.md for complete setup instructions
 // The demo config below will NOT work - you must create your own Firebase project
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "your-project.firebaseapp.com",
-  databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-  projectId: "your-project",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789012",
-  appId: "1:123456789012:web:abc123def456"
+  apiKey: "AIzaSyC7XxsxIn_FgEWZzYXV-_2_7uny8JOE5cg",
+  authDomain: "imposterpartygame-540ee.firebaseapp.com",
+  databaseURL: "https://imposterpartygame-540ee-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "imposterpartygame-540ee",
+  storageBucket: "imposterpartygame-540ee.firebasestorage.app",
+  messagingSenderId: "579941194156",
+  appId: "1:579941194156:web:83ebe4a4bc3ab46c0c0209",
+  measurementId: "G-ZVJ8DB0TPF"
 };
 
 const MULTIPLAYER = {
