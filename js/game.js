@@ -379,8 +379,8 @@ function showAnswerLarge(answer) {
     hostBtn.textContent = "Start nieuw spel";
     hostBtn.style.marginTop = "16px";
     hostBtn.className = "secondary";
-    hostBtn.addEventListener("click", () => {
-      MULTIPLAYER.startNewGame();
+    hostBtn.addEventListener("click", async () => {
+      await MULTIPLAYER.startNewGame();
       returnToMainMenu();
     });
     box.appendChild(hostBtn);
@@ -483,6 +483,13 @@ startGameBtn.addEventListener("click", () => {
     
     // For multiplayer, show individual screen for host too
     const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
+    
+    if (myIndex === -1) {
+      console.error('Host not found in players list');
+      alert('Er is een probleem opgetreden. Je naam werd niet gevonden in de spelers lijst.');
+      return;
+    }
+    
     const amImposter = myIndex === imposterIndex;
     showIndividualPlayerScreen(myIndex, amImposter);
   } else {
@@ -671,6 +678,14 @@ function handleGameDataReceived(gameData) {
   
   // Find my player index and set imposter index
   const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
+  
+  if (myIndex === -1) {
+    console.error('Player not found in game data');
+    alert('Er is een probleem opgetreden. Je naam werd niet gevonden in de spelers lijst.');
+    returnToMainMenu();
+    return;
+  }
+  
   const amImposter = gameData.players[myIndex].isImposter;
   
   // Set imposterIndex properly for renderRole to work
@@ -691,6 +706,7 @@ function handleGameDataReceived(gameData) {
 }
 
 // Show individual player's role (for multiplayer)
+// isImposter parameter is not used but kept for clarity about player role
 function showIndividualPlayerScreen(playerIndex, isImposter) {
   showScreen(revealScreen);
   
@@ -699,7 +715,7 @@ function showIndividualPlayerScreen(playerIndex, isImposter) {
   
   // Show role immediately
   currentIndex = playerIndex;
-  // imposterIndex is already set from setupGameState
+  // imposterIndex should be set by caller (setupGameState for host, handleGameDataReceived for non-hosts)
   
   renderRole();
   roleContainer.classList.remove("hidden");

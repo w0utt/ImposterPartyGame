@@ -105,6 +105,15 @@ const MULTIPLAYER = {
         }
       });
       
+      // Listen for new game restart
+      this.roomRef.child('gameStarted').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val === false && window.returnToMainMenu) {
+          // Game was reset, return to waiting room
+          window.returnToMainMenu();
+        }
+      });
+      
       console.log('Room created:', this.roomCode);
       return this.roomCode;
     } catch (error) {
@@ -158,26 +167,32 @@ const MULTIPLAYER = {
         }
       });
       
-      // Listen for game start signal
-      this.roomRef.child('gameStarted').on('value', (snapshot) => {
-        if (snapshot.val() && window.handleMultiplayerGameStart) {
+      // Listen for game mode being set (indicates game start)
+      this.roomRef.child('gameMode').on('value', (snapshot) => {
+        const gameMode = snapshot.val();
+        if (gameMode && window.handleMultiplayerGameStart) {
+          // Only trigger once when game mode is first set
+          this.roomRef.child('gameMode').off('value');
           window.handleMultiplayerGameStart();
         }
       });
       
-      // Listen for full game data (for non-hosts)
+      // Listen for full game data
       this.roomRef.on('value', (snapshot) => {
         const data = snapshot.val();
-        if (data && data.gameMode && data.gameStarted && !this.isHost && window.handleGameDataReceived) {
+        if (data && data.gameMode && data.gameStarted && window.handleGameDataReceived) {
+          // Remove this listener after first call to avoid duplicates
+          this.roomRef.off('value');
           window.handleGameDataReceived(data);
         }
-        
-        // Listen for new game restart
-        if (data && !data.gameStarted && data.status === 'waiting' && window.returnToMainMenu) {
-          // Host started a new game, return everyone to waiting room
-          if (this.roomRef) {
-            window.returnToMainMenu();
-          }
+      });
+      
+      // Listen for game restart
+      this.roomRef.child('gameStarted').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val === false && window.returnToMainMenu) {
+          // Game was reset, return to waiting room
+          window.returnToMainMenu();
         }
       });
       
