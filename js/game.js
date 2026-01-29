@@ -29,6 +29,7 @@ const waitingRoomScreen = document.getElementById("waiting-room-screen");
 const displayedRoomCode = document.getElementById("displayedRoomCode");
 const playersListDiv = document.getElementById("playersList");
 const hostControls = document.getElementById("hostControls");
+const playerWaitingMessage = document.getElementById("playerWaitingMessage");
 const startMultiplayerGameBtn = document.getElementById("startMultiplayerGameBtn");
 const leaveRoomBtn = document.getElementById("leaveRoomBtn");
 const connectionStatus = document.getElementById("connectionStatus");
@@ -570,6 +571,7 @@ createRoomBtn.addEventListener("click", async () => {
     isMultiplayer = true;
     displayedRoomCode.textContent = roomCode;
     hostControls.classList.remove("hidden");
+    playerWaitingMessage.classList.add("hidden");
     updatePlayersListUI(MULTIPLAYER.players);
     showScreen(waitingRoomScreen);
     return;
@@ -583,6 +585,7 @@ createRoomBtn.addEventListener("click", async () => {
   // Show waiting room
   displayedRoomCode.textContent = roomCode;
   hostControls.classList.remove("hidden");
+  playerWaitingMessage.classList.add("hidden");
   updatePlayersListUI(MULTIPLAYER.players);
   showScreen(waitingRoomScreen);
 });
@@ -617,6 +620,7 @@ joinRoomBtn.addEventListener("click", async () => {
     isMultiplayer = true;
     displayedRoomCode.textContent = code;
     hostControls.classList.add("hidden");
+    playerWaitingMessage.classList.remove("hidden");
     showScreen(waitingRoomScreen);
   }
 });
