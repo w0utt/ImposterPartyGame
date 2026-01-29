@@ -5,7 +5,35 @@ const MODES = {
   PROMPT: "prompt"
 };
 
-// DOM
+// DOM - Main Menu
+const mainMenuScreen = document.getElementById("main-menu-screen");
+const localGameBtn = document.getElementById("localGameBtn");
+const hostGameBtn = document.getElementById("hostGameBtn");
+const joinGameBtn = document.getElementById("joinGameBtn");
+
+// DOM - Host Setup
+const hostSetupScreen = document.getElementById("host-setup-screen");
+const hostNameInput = document.getElementById("hostName");
+const createRoomBtn = document.getElementById("createRoomBtn");
+const backFromHostBtn = document.getElementById("backFromHostBtn");
+
+// DOM - Join Setup
+const joinSetupScreen = document.getElementById("join-setup-screen");
+const joinNameInput = document.getElementById("joinName");
+const roomCodeInput = document.getElementById("roomCode");
+const joinRoomBtn = document.getElementById("joinRoomBtn");
+const backFromJoinBtn = document.getElementById("backFromJoinBtn");
+
+// DOM - Waiting Room
+const waitingRoomScreen = document.getElementById("waiting-room-screen");
+const displayedRoomCode = document.getElementById("displayedRoomCode");
+const playersListDiv = document.getElementById("playersList");
+const hostControls = document.getElementById("hostControls");
+const startMultiplayerGameBtn = document.getElementById("startMultiplayerGameBtn");
+const leaveRoomBtn = document.getElementById("leaveRoomBtn");
+const connectionStatus = document.getElementById("connectionStatus");
+
+// DOM - Setup/Game screens
 const setupScreen = document.getElementById("setup-screen");
 const revealScreen = document.getElementById("reveal-screen");
 const endScreen = document.getElementById("end-screen");
@@ -40,9 +68,14 @@ let promptPair = null;
 let rolesRevealed = false;
 let gameMode = MODES.CATEGORIES;
 let answers = []; // per speler antwoord (vraag-modus)
+let isMultiplayer = false; // Track if we're in multiplayer mode
 
 // Helpers
 function showScreen(screen) {
+  mainMenuScreen.classList.add("hidden");
+  hostSetupScreen.classList.add("hidden");
+  joinSetupScreen.classList.add("hidden");
+  waitingRoomScreen.classList.add("hidden");
   setupScreen.classList.add("hidden");
   revealScreen.classList.add("hidden");
   endScreen.classList.add("hidden");
@@ -411,3 +444,174 @@ showAnswersBtn.addEventListener("click", () => {
 
 // Init
 initNameInputs(parseInt(playerCountInput.value, 10));
+
+// Show main menu on load
+showScreen(mainMenuScreen);
+
+// =====================================================
+// Multiplayer Event Handlers
+// =====================================================
+
+// Main Menu
+localGameBtn.addEventListener("click", () => {
+  isMultiplayer = false;
+  showScreen(setupScreen);
+});
+
+hostGameBtn.addEventListener("click", () => {
+  MULTIPLAYER.init();
+  showScreen(hostSetupScreen);
+});
+
+joinGameBtn.addEventListener("click", () => {
+  MULTIPLAYER.init();
+  showScreen(joinSetupScreen);
+});
+
+// Host Setup
+createRoomBtn.addEventListener("click", async () => {
+  const name = hostNameInput.value.trim();
+  if (!name) {
+    alert("Vul je naam in");
+    return;
+  }
+  
+  // For demo mode without Firebase, generate immediate room code
+  if (!MULTIPLAYER.db) {
+    const roomCode = MULTIPLAYER.generateRoomCode();
+    MULTIPLAYER.isHost = true;
+    MULTIPLAYER.playerName = name;
+    MULTIPLAYER.roomCode = roomCode;
+    MULTIPLAYER.playerId = MULTIPLAYER.generatePlayerId();
+    MULTIPLAYER.players = [{ id: MULTIPLAYER.playerId, name: name, isHost: true }];
+    
+    isMultiplayer = true;
+    displayedRoomCode.textContent = roomCode;
+    hostControls.classList.remove("hidden");
+    updatePlayersListUI(MULTIPLAYER.players);
+    showScreen(waitingRoomScreen);
+    return;
+  }
+  
+  const roomCode = await MULTIPLAYER.hostGame(name);
+  if (!roomCode) return;
+  
+  isMultiplayer = true;
+  
+  // Show waiting room
+  displayedRoomCode.textContent = roomCode;
+  hostControls.classList.remove("hidden");
+  updatePlayersListUI(MULTIPLAYER.players);
+  showScreen(waitingRoomScreen);
+});
+
+backFromHostBtn.addEventListener("click", () => {
+  showScreen(mainMenuScreen);
+});
+
+// Join Setup
+joinRoomBtn.addEventListener("click", async () => {
+  const name = joinNameInput.value.trim();
+  const code = roomCodeInput.value.trim().toUpperCase();
+  
+  if (!name) {
+    alert("Vul je naam in");
+    return;
+  }
+  
+  if (!code || code.length !== 6) {
+    alert("Vul een geldige 6-cijferige code in");
+    return;
+  }
+  
+  // For demo mode without Firebase
+  if (!MULTIPLAYER.db) {
+    alert("Multiplayer vereist Firebase configuratie. Zie MULTIPLAYER_SETUP.md voor instructies.\n\nJe kunt wel het lokale spel gebruiken door op 'Terug' te klikken en 'Lokaal spel (één apparaat)' te selecteren.");
+    return;
+  }
+  
+  const success = await MULTIPLAYER.joinGame(name, code);
+  if (success) {
+    isMultiplayer = true;
+    displayedRoomCode.textContent = code;
+    hostControls.classList.add("hidden");
+    showScreen(waitingRoomScreen);
+  }
+});
+
+backFromJoinBtn.addEventListener("click", () => {
+  showScreen(mainMenuScreen);
+});
+
+// Waiting Room
+startMultiplayerGameBtn.addEventListener("click", () => {
+  if (MULTIPLAYER.players.length < 3) {
+    alert("Er zijn minimaal 3 spelers nodig om te starten");
+    return;
+  }
+  
+  // Notify all players that game is starting
+  MULTIPLAYER.startGame();
+  
+  // Start game for host
+  startMultiplayerGame();
+});
+
+leaveRoomBtn.addEventListener("click", () => {
+  MULTIPLAYER.leaveRoom();
+  isMultiplayer = false;
+  playerCountInput.disabled = false;
+  returnToMainMenu();
+});
+
+// Handle multiplayer game start
+function startMultiplayerGame() {
+  // Set up players from multiplayer list
+  players = MULTIPLAYER.players.map(p => p.name);
+  
+  // Setup game and go to setup screen to choose mode
+  showScreen(setupScreen);
+  
+  // Auto-fill player count
+  playerCountInput.value = players.length;
+  playerCountInput.disabled = true;
+  
+  // Fill in names
+  initNameInputs(players.length);
+  const nameInputs = namesContainer.querySelectorAll("input[type='text']");
+  nameInputs.forEach((input, index) => {
+    input.value = players[index];
+    input.disabled = true;
+  });
+}
+
+// Make function available to multiplayer.js
+window.handleMultiplayerGameStart = startMultiplayerGame;
+
+// Helper functions for multiplayer
+function updatePlayersListUI(playersList) {
+  playersListDiv.innerHTML = "";
+  
+  playersList.forEach((player, index) => {
+    const div = document.createElement("div");
+    div.className = "player-item";
+    div.textContent = `${index + 1}. ${player.name}`;
+    if (player.isHost) {
+      div.textContent += " 👑";
+    }
+    playersListDiv.appendChild(div);
+  });
+}
+
+function returnToMainMenu() {
+  showScreen(mainMenuScreen);
+  // Reset inputs
+  hostNameInput.value = "";
+  joinNameInput.value = "";
+  roomCodeInput.value = "";
+  playerCountInput.disabled = false;
+}
+
+// Make functions available to multiplayer.js
+window.updatePlayersListUI = updatePlayersListUI;
+window.returnToMainMenu = returnToMainMenu;

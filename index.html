@@ -5,6 +5,9 @@
   <title>Imposter Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <link rel="stylesheet" href="css/styles.css" />
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
 </head>
 <body>
   <div class="app">
@@ -15,6 +18,75 @@
         Kies een modus: een geheime persoon of een vraag met een twist. Geef de telefoon door per speler.
       </p>
     </header>
+
+    <!-- Main Menu scherm -->
+    <section id="main-menu-screen" class="card hidden">
+      <h2>Speel opties</h2>
+      <p class="small center" style="margin-bottom: 16px;">
+        Kies hoe je wilt spelen: lokaal op één apparaat of online met meerdere apparaten.
+      </p>
+      
+      <button id="localGameBtn" style="margin-bottom: 8px;">Lokaal spel (één apparaat)</button>
+      <button id="hostGameBtn" class="secondary" style="margin-bottom: 8px;">Host online spel</button>
+      <button id="joinGameBtn" class="secondary">Join online spel</button>
+    </section>
+
+    <!-- Host Setup scherm -->
+    <section id="host-setup-screen" class="card hidden">
+      <h2>Host een online spel</h2>
+      
+      <div class="row">
+        <label for="hostName">Jouw naam</label>
+        <input id="hostName" type="text" placeholder="Vul je naam in" />
+      </div>
+      
+      <button id="createRoomBtn" style="margin-top: 12px;">Maak kamer aan</button>
+      <button id="backFromHostBtn" class="secondary" style="margin-top: 8px;">Terug</button>
+    </section>
+
+    <!-- Join Setup scherm -->
+    <section id="join-setup-screen" class="card hidden">
+      <h2>Join een online spel</h2>
+      
+      <div class="row">
+        <label for="joinName">Jouw naam</label>
+        <input id="joinName" type="text" placeholder="Vul je naam in" />
+      </div>
+      
+      <div class="row">
+        <label for="roomCode">Kamer code</label>
+        <input id="roomCode" type="text" placeholder="6-cijferige code" maxlength="6" />
+      </div>
+      
+      <button id="joinRoomBtn" style="margin-top: 12px;">Join kamer</button>
+      <button id="backFromJoinBtn" class="secondary" style="margin-top: 8px;">Terug</button>
+    </section>
+
+    <!-- Waiting Room scherm -->
+    <section id="waiting-room-screen" class="card hidden">
+      <h2>Wachtkamer</h2>
+      
+      <div id="roomCodeDisplay" style="text-align: center; margin: 16px 0;">
+        <div class="small" style="opacity: 0.7;">Kamer code:</div>
+        <div style="font-size: 32px; font-weight: 700; letter-spacing: 4px; margin-top: 4px;" id="displayedRoomCode">------</div>
+        <div class="small" style="opacity: 0.7; margin-top: 4px;">Deel deze code met andere spelers</div>
+      </div>
+      
+      <div style="margin: 16px 0;">
+        <h3 style="font-size: 14px; margin: 0 0 8px 0;">Spelers in de kamer:</h3>
+        <div id="playersList" class="players-list"></div>
+      </div>
+      
+      <div id="hostControls" class="hidden">
+        <button id="startMultiplayerGameBtn" style="margin-top: 12px;">Start spel</button>
+      </div>
+      
+      <button id="leaveRoomBtn" class="secondary" style="margin-top: 8px;">Verlaat kamer</button>
+      
+      <div id="connectionStatus" class="small center" style="margin-top: 12px; opacity: 0.6;">
+        Verbonden...
+      </div>
+    </section>
 
     <!-- Setup scherm -->
     <section id="setup-screen" class="card">
@@ -92,6 +164,7 @@
   </div>
 
   <script src="data/config.js"></script>
+  <script src="js/multiplayer.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>
