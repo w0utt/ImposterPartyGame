@@ -961,24 +961,23 @@
         // vraag-modus
         if (isImposter) {
           const box = document.createElement("div");
-          box.className = "imposter-display";
+          box.className = "word-display";
 
           const title = document.createElement("div");
-          title.className = "title";
-          title.textContent = "JIJ BENT DE IMPOSTER 😈";
+          title.className = "question-title";
+          title.textContent = "Jouw vraag:";
           box.appendChild(title);
 
-          const theme = document.createElement("div");
-          theme.className = "theme";
-          theme.textContent = "Vraag (alleen voor jou)";
-          box.appendChild(theme);
+          const question = document.createElement("div");
+          question.className = "question";
+          question.textContent = promptPair.imposter;
+          box.appendChild(question);
 
-          const text = document.createElement("div");
-          text.className = "text";
-          text.innerHTML =
-            `<strong>${promptPair.imposter}</strong><br><br>` +
-            "De andere spelers krijgen een andere vraag. Antwoord zo dat je niet opvalt.";
-          box.appendChild(text);
+          const hint = document.createElement("div");
+          hint.className = "small";
+          hint.style.marginTop = "6px";
+          hint.textContent = "Onthoud je antwoord. Er zit één Imposter met een andere vraag.";
+          box.appendChild(hint);
 
           const answerLabel = document.createElement("div");
           answerLabel.className = "small";
