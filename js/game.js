@@ -295,6 +295,26 @@ function goToRevealScreen() {
 }
 
 function handlePrimaryRevealClick() {
+  // Special handling for multiplayer Q&A mode
+  if (isMultiplayer && gameMode === MODES.PROMPT) {
+    const input = document.getElementById("answerInput");
+    if (input) {
+      const answer = input.value.trim();
+      if (answer) {
+        // Save answer and update to Firebase
+        answers[currentIndex] = answer;
+        MULTIPLAYER.updatePlayerAnswer(answer);
+        
+        // Show answer large on screen
+        showAnswerLarge(answer);
+        return;
+      } else {
+        alert("Vul eerst je antwoord in");
+        return;
+      }
+    }
+  }
+  
   const roleHidden = roleContainer.classList.contains("hidden");
 
   if (roleHidden) {
@@ -325,6 +345,45 @@ function handlePrimaryRevealClick() {
       renderRevealInstruction();
       primaryRevealBtn.textContent = "Toon rol";
     }
+  }
+}
+
+// Show answer large on screen (for multiplayer Q&A)
+function showAnswerLarge(answer) {
+  roleContainer.innerHTML = "";
+  
+  const box = document.createElement("div");
+  box.className = "word-display";
+  box.style.textAlign = "center";
+  
+  const title = document.createElement("div");
+  title.className = "small";
+  title.textContent = "Jouw antwoord:";
+  title.style.marginBottom = "12px";
+  box.appendChild(title);
+  
+  const answerText = document.createElement("div");
+  answerText.className = "word";
+  answerText.style.fontSize = "28px";
+  answerText.textContent = answer;
+  box.appendChild(answerText);
+  
+  roleContainer.appendChild(box);
+  
+  // Update button
+  primaryRevealBtn.style.display = "none";
+  
+  // Show host controls if host
+  if (MULTIPLAYER.isHost) {
+    const hostBtn = document.createElement("button");
+    hostBtn.textContent = "Start nieuw spel";
+    hostBtn.style.marginTop = "16px";
+    hostBtn.className = "secondary";
+    hostBtn.addEventListener("click", () => {
+      MULTIPLAYER.startNewGame();
+      returnToMainMenu();
+    });
+    box.appendChild(hostBtn);
   }
 }
 
@@ -413,6 +472,16 @@ playerCountInput.addEventListener("change", () => {
 
 startGameBtn.addEventListener("click", () => {
   if (!setupGameState(false)) return;
+  
+  // If multiplayer, sync game state to all players
+  if (isMultiplayer && MULTIPLAYER.isHost) {
+    const gameData = gameMode === MODES.CATEGORIES 
+      ? { category: category.naam, word: secretWord }
+      : { publicPrompt: promptPair.publiek, imposterPrompt: promptPair.imposter };
+    
+    MULTIPLAYER.startGame(gameMode, players, imposterIndex, gameData);
+  }
+  
   goToRevealScreen();
 });
 
@@ -550,10 +619,7 @@ startMultiplayerGameBtn.addEventListener("click", () => {
     return;
   }
   
-  // Notify all players that game is starting
-  MULTIPLAYER.startGame();
-  
-  // Start game for host
+  // Just move host to setup screen - don't notify others yet
   startMultiplayerGame();
 });
 
@@ -569,24 +635,77 @@ function startMultiplayerGame() {
   // Set up players from multiplayer list
   players = MULTIPLAYER.players.map(p => p.name);
   
-  // Setup game and go to setup screen to choose mode
-  showScreen(setupScreen);
+  if (MULTIPLAYER.isHost) {
+    // Host chooses game mode
+    showScreen(setupScreen);
+    
+    // Auto-fill player count
+    playerCountInput.value = players.length;
+    playerCountInput.disabled = true;
+    
+    // Fill in names
+    initNameInputs(players.length);
+    const nameInputs = namesContainer.querySelectorAll("input[type='text']");
+    nameInputs.forEach((input, index) => {
+      input.value = players[index];
+      input.disabled = true;
+    });
+  } else {
+    // Non-host: stay in waiting room until game data arrives
+    // Will be handled by listener in multiplayer.js
+  }
+}
+
+// Handle game data received by non-host players
+function handleGameDataReceived(gameData) {
+  if (MULTIPLAYER.isHost) return; // Only for non-hosts
   
-  // Auto-fill player count
-  playerCountInput.value = players.length;
-  playerCountInput.disabled = true;
+  gameMode = gameData.gameMode;
+  players = gameData.players.map(p => p.name);
   
-  // Fill in names
-  initNameInputs(players.length);
-  const nameInputs = namesContainer.querySelectorAll("input[type='text']");
-  nameInputs.forEach((input, index) => {
-    input.value = players[index];
-    input.disabled = true;
-  });
+  // Find my player index
+  const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
+  const amImposter = gameData.players[myIndex].isImposter;
+  
+  if (gameMode === MODES.CATEGORIES) {
+    category = { naam: gameData.gameData.category };
+    secretWord = gameData.gameData.word;
+  } else {
+    promptPair = {
+      publiek: gameData.gameData.publicPrompt,
+      imposter: gameData.gameData.imposterPrompt
+    };
+  }
+  
+  // Show individual player screen
+  showIndividualPlayerScreen(myIndex, amImposter);
+}
+
+// Show individual player's role (for multiplayer Q&A)
+function showIndividualPlayerScreen(playerIndex, isImposter) {
+  showScreen(revealScreen);
+  
+  // Update instruction to show only player's own name
+  revealInstruction.innerHTML = `Hallo <span class="player-highlight">${MULTIPLAYER.playerName}</span>!`;
+  
+  // Show role immediately
+  currentIndex = playerIndex;
+  imposterIndex = isImposter ? playerIndex : -1; // Not really needed, but for consistency
+  
+  renderRole();
+  roleContainer.classList.remove("hidden");
+  
+  if (gameMode === MODES.PROMPT) {
+    primaryRevealBtn.textContent = "Verstuur antwoord";
+  } else {
+    primaryRevealBtn.textContent = "Begrepen";
+    primaryRevealBtn.style.display = "none"; // Hide for category mode in multiplayer
+  }
 }
 
 // Make function available to multiplayer.js
 window.handleMultiplayerGameStart = startMultiplayerGame;
+window.handleGameDataReceived = handleGameDataReceived;
 
 // Helper functions for multiplayer
 function updatePlayersListUI(playersList) {
@@ -604,12 +723,17 @@ function updatePlayersListUI(playersList) {
 }
 
 function returnToMainMenu() {
-  showScreen(mainMenuScreen);
-  // Reset inputs
-  hostNameInput.value = "";
-  joinNameInput.value = "";
-  roomCodeInput.value = "";
-  playerCountInput.disabled = false;
+  if (isMultiplayer && MULTIPLAYER.roomRef) {
+    // Return to waiting room if in multiplayer
+    showScreen(waitingRoomScreen);
+  } else {
+    showScreen(mainMenuScreen);
+    // Reset inputs
+    hostNameInput.value = "";
+    joinNameInput.value = "";
+    roomCodeInput.value = "";
+    playerCountInput.disabled = false;
+  }
 }
 
 // Make functions available to multiplayer.js
