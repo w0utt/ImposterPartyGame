@@ -168,20 +168,18 @@ const MULTIPLAYER = {
         }
       });
       
-      // Listen for full game data
-      this.roomRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data && data.gameMode && data.gameStarted && window.handleGameDataReceived) {
-          // Remove this listener after first call to avoid duplicates
-          this.roomRef.off('value');
-          window.handleGameDataReceived(data);
-        }
-      });
-      
-      // Listen for game restart
+      // Listen for game state changes
       this.roomRef.child('gameStarted').on('value', (snapshot) => {
         const val = snapshot.val();
-        if (val === false && window.returnToMainMenu) {
+        if (val === true) {
+          // Game has started, fetch full data
+          this.roomRef.once('value', (dataSnapshot) => {
+            const data = dataSnapshot.val();
+            if (data && data.gameMode && data.players && data.gameData && window.handleGameDataReceived) {
+              window.handleGameDataReceived(data);
+            }
+          });
+        } else if (val === false && window.returnToMainMenu) {
           // Game was reset, return to waiting room
           window.returnToMainMenu();
         }
