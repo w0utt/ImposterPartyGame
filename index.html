@@ -4,77 +4,26 @@
   <meta charset="UTF-8" />
   <title>Imposter Game</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
-
     <header class="card center">
       <h1>Imposter Game</h1>
       <p class="small">
         Eén iemand is de <strong>Imposter</strong>.<br />
-        Kies een modus en geef de telefoon door per speler.
+        Geef de telefoon door per speler.
       </p>
     </header>
 
-    <!-- Setup scherm -->
-    <section id="setup-screen" class="card">
-      <h2>1. Kies modus</h2>
+    <section id="setup-screen" class="card"></section>
+    <section id="reveal-screen" class="card hidden"></section>
+    <section id="end-screen" class="card hidden"></section>
+  </div>
 
-      <div class="mode-group" id="modeGroup">
-        <div class="mode-option active">
-          <input type="radio" name="mode" value="categories" checked />
-          <div>
-            <label>Categorie & persoon</label>
-            <div class="mode-desc">
-              Iedereen krijgt een woord, één speler niet.
-            </div>
-          </div>
-        </div>
-
-        <div class="mode-option">
-          <input type="radio" name="mode" value="prompt" />
-          <div>
-            <label>Vraag & antwoord</label>
-            <div class="mode-desc">
-              Iedereen krijgt een vraag, mogelijk verschilt er één.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <h2>2. Spelers</h2>
-      <div class="row">
-        <label>Aantal spelers</label>
-        <input id="playerCount" type="number" min="3" max="12" value="5" />
-      </div>
-
-      <div class="names-list" id="namesContainer"></div>
-
-      <button id="startGameBtn">Start ronde</button>
-    </section>
-
-    <!-- Reveal scherm -->
-    <section id="reveal-screen" class="card hidden">
-      <div id="reveal-step-instruction" class="big-label"></div>
-
-      <p class="small center">
-        Zorg dat alleen deze speler het scherm ziet.
-      </p>
-
-      <div id="roleContainer" class="hidden"></div>
-
-      <button id="primaryRevealBtn">Toon rol</button>
-      <button id="restartFromRevealBtn" class="secondary" style="margin-top:8px;">
-        Nieuwe setup
-      </button>
-    </section>
-
-    <!-- Einde scherm -->
-    <section id="end-screen" class="card hidden">
-      <h2>Rollen gedeeld ✅</h2>
-      <p id="end-main-text" class="center"></p>
-      <p id="end-summary" class="small center"></p>
-
-      <button id="showAnswersBtn" class="secondary hidden">Toon antwoorden</button>
-      <div id="answersContainer" class="hidden"></
+  <script src="config.js"></script>
+  <script src="state.js"></script>
+  <script src="ui.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
