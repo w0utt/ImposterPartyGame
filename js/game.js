@@ -480,9 +480,15 @@ startGameBtn.addEventListener("click", () => {
       : { publicPrompt: promptPair.publiek, imposterPrompt: promptPair.imposter };
     
     MULTIPLAYER.startGame(gameMode, players, imposterIndex, gameData);
+    
+    // For multiplayer, show individual screen for host too
+    const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
+    const amImposter = myIndex === imposterIndex;
+    showIndividualPlayerScreen(myIndex, amImposter);
+  } else {
+    // Local game - use the pass-around-device flow
+    goToRevealScreen();
   }
-  
-  goToRevealScreen();
 });
 
 primaryRevealBtn.addEventListener("click", handlePrimaryRevealClick);
@@ -663,9 +669,12 @@ function handleGameDataReceived(gameData) {
   gameMode = gameData.gameMode;
   players = gameData.players.map(p => p.name);
   
-  // Find my player index
+  // Find my player index and set imposter index
   const myIndex = players.findIndex(name => name === MULTIPLAYER.playerName);
   const amImposter = gameData.players[myIndex].isImposter;
+  
+  // Set imposterIndex properly for renderRole to work
+  imposterIndex = gameData.players.findIndex(p => p.isImposter);
   
   if (gameMode === MODES.CATEGORIES) {
     category = { naam: gameData.gameData.category };
@@ -681,7 +690,7 @@ function handleGameDataReceived(gameData) {
   showIndividualPlayerScreen(myIndex, amImposter);
 }
 
-// Show individual player's role (for multiplayer Q&A)
+// Show individual player's role (for multiplayer)
 function showIndividualPlayerScreen(playerIndex, isImposter) {
   showScreen(revealScreen);
   
@@ -690,16 +699,25 @@ function showIndividualPlayerScreen(playerIndex, isImposter) {
   
   // Show role immediately
   currentIndex = playerIndex;
-  imposterIndex = isImposter ? playerIndex : -1; // Not really needed, but for consistency
+  // imposterIndex is already set from setupGameState
   
   renderRole();
   roleContainer.classList.remove("hidden");
   
   if (gameMode === MODES.PROMPT) {
+    // Q&A mode: Show answer submission button
     primaryRevealBtn.textContent = "Verstuur antwoord";
+    primaryRevealBtn.style.display = "";
   } else {
-    primaryRevealBtn.textContent = "Begrepen";
-    primaryRevealBtn.style.display = "none"; // Hide for category mode in multiplayer
+    // Category mode: Just show the word/role, no interaction needed
+    primaryRevealBtn.style.display = "none";
+    
+    // For category mode, show a simple acknowledgment message
+    const infoBox = document.createElement("div");
+    infoBox.className = "small center";
+    infoBox.style.marginTop = "16px";
+    infoBox.textContent = "Wacht op andere spelers...";
+    roleContainer.appendChild(infoBox);
   }
 }
 
