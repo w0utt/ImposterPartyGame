@@ -167,16 +167,6 @@ const MULTIPLAYER = {
         }
       });
       
-      // Listen for game mode being set (indicates game start)
-      this.roomRef.child('gameMode').on('value', (snapshot) => {
-        const gameMode = snapshot.val();
-        if (gameMode && window.handleMultiplayerGameStart) {
-          // Only trigger once when game mode is first set
-          this.roomRef.child('gameMode').off('value');
-          window.handleMultiplayerGameStart();
-        }
-      });
-      
       // Listen for full game data
       this.roomRef.on('value', (snapshot) => {
         const data = snapshot.val();
