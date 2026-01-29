@@ -369,6 +369,28 @@ function showAnswerLarge(answer) {
   answerText.textContent = answer;
   box.appendChild(answerText);
   
+  // Always show the non-imposter question to the host (whether they are imposter or not)
+  if (MULTIPLAYER.isHost && promptPair) {
+    const separator = document.createElement("hr");
+    separator.style.margin = "20px 0";
+    separator.style.border = "none";
+    separator.style.borderTop = "1px solid rgba(255, 255, 255, 0.1)";
+    box.appendChild(separator);
+    
+    const questionLabel = document.createElement("div");
+    questionLabel.className = "small";
+    questionLabel.textContent = "Vraag voor niet-imposters:";
+    questionLabel.style.marginBottom = "12px";
+    box.appendChild(questionLabel);
+    
+    const questionText = document.createElement("div");
+    questionText.className = "question";
+    questionText.style.fontSize = "18px";
+    questionText.style.fontWeight = "500";
+    questionText.textContent = promptPair.publiek;
+    box.appendChild(questionText);
+  }
+  
   roleContainer.appendChild(box);
   
   // Update button
