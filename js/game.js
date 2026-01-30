@@ -369,8 +369,9 @@ function showAnswerLarge(answer) {
   answerText.textContent = answer;
   box.appendChild(answerText);
   
-  // Always show the non-imposter question to the host (whether they are imposter or not)
-  if (MULTIPLAYER.isHost && promptPair) {
+  // Always show the non-imposter question (whether they are imposter or not)
+  // This helps players identify who might have gotten the imposter question
+  if (promptPair) {
     const separator = document.createElement("hr");
     separator.style.margin = "20px 0";
     separator.style.border = "none";
